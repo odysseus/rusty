@@ -1,12 +1,46 @@
 use std::io::println;
+use std::comm::{channel, Sender, Receiver};
 
 fn main() {
+  // Hello, world!
   println("Hello, world!");
+
+  // Spawning concurrent processes to print "Hello"
   for _ in range(0u, 10) {
     spawn(proc() {
-      let greeting_message = "Hello?";
-      println!("{}", greeting_message);
+      println!("Hello");
     });
   }
+
+  // Opening a channel and port to communicate with a spawned proceess
+  let (chan, port) = channel();
+  spawn(proc() {
+    chan.send(10u);
+  });
+  println!("{:s}", port.recv().to_str());
+
+  // Creating channels to send a value, add one to it, then send it back
+  let (fromParentSender, fromParentReceiver) = channel();
+  let (fromChildSender, fromChildReceiver) = channel();
+  spawn(proc() {
+    plus_one(&fromChildSender, &fromParentReceiver);
+  });
+  for i in range(20i,25) {
+    fromParentSender.send(i);
+  }
+  fromParentSender.send(0);
+  for _ in range(0u,5) {
+    let answer = fromChildReceiver.recv();
+    println!("{:s}", answer.to_str());
+  }
+
 }
 
+fn plus_one(sender: &Sender<int>, receiver: &Receiver<int>) {
+  let mut value: int;
+  loop {
+    value = receiver.recv();
+    sender.send(value + 1);
+    if value == 0 { break; }
+  }
+}

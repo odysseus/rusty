@@ -32,4 +32,49 @@ fn main() {
   // mean that, once evaluated, the block will return the value of the
   // conditional that evaluated to true
 
+  // Various Variable Types
+  let e: int = 1;   // int
+  let f = 10i;      // int
+  let g = 100u;     // unsigned int
+  let h = 15i8;     // 8 bit int
+  let i = 1000i32;  // 32 bit int
+  let j = 1000i64;  // 64 bit int
+  let k = 1e6f32;    // 32 bit float
+  let l = 2.1e-10f64;    // 64 bit float
+
+  // true and false are literals of type bool
+  let tr = true;
+  let fa = false;
+
+  // Strings are complicated, but here are some basics:
+  // Chars are four byte Unicode characters with single quotes
+  let m = 'a';
+  // Double-quoted strings will recognize some escape sequences:
+  let n = "Hello, world!\n";
+  // Raw string literals process none of these and use #hashes#
+  // at the beginning and end to define them
+  let o = r##"Hello, world!\n"##;
+
+  // The unit type, written as () has a single value of ()
+  let p = ();
+
+  // Operators are all pretty standard:
+  // + - * / for arithmetic
+  // - works to negate numbers as well
+  // ! applied to an integer flips all the bits (bitwise NOT)
+  // Bitwise operators: << >> & | ^
+  // Comparison operators: == != < > <= >=
+  // Boolean operators: && || and they short circuit
+
+  // Compile time casting
+  println!("{:0.2f}", (f as f32));
+  let q: f64 = 4.0;
+  let r: uint = q as uint;
+
+  // Syntax Extensions
+}
+
+// Another example of capturing the value of an expression evaluation
+fn is_four(x: int) -> bool {
+  x == 4
 }

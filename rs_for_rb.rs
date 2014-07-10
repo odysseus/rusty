@@ -34,6 +34,9 @@ fn main() {
     println!("{:s}", answer.to_str());
   }
 
+  let x = box 10i;
+  println!("{:d}", inc(x));
+
 }
 
 fn plus_one(sender: &Sender<int>, receiver: &Receiver<int>) {
@@ -43,4 +46,9 @@ fn plus_one(sender: &Sender<int>, receiver: &Receiver<int>) {
     sender.send(value + 1);
     if value == 0 { break; }
   }
+}
+
+// Example of using a borrowed pointer
+fn inc(x: &int) -> int {
+  *x + 1
 }

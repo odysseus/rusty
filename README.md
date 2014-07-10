@@ -216,6 +216,7 @@ If the blocks have a value (no semicolon at the end, thus passing the value to t
 
 Now for something completely better. Loops can be annotated and controlled separately when dealing with nested loops.
 
+```clojure
     fn main() {
         'outer: loop {
             println!("Entered the outer loop");
@@ -230,6 +231,7 @@ Now for something completely better. Loops can be annotated and controlled separ
         }
         println!("Exited the outer loop");
     }
+```
 
 ### Pattern Matching
 Is a generalized and more powerful version of the switch statement the first pattern that matches executes, there is no need to break. Pipes `|` can be used to match multiple conditions, so long as they match the same variables when using destructuring (See below). With numbers a range can be specified using `a..b`:

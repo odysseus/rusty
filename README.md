@@ -3,37 +3,37 @@
 
 Are declared using let
 
-```clojure
+```rust
     let a = 10;
 ```
 
 Most types can be inferred, but if you need a specific type:
 
-```clojure
+```rust
     let b: i64 = 2000000000000;
 ```
 
 All variables are immutable by default, to allow mutation:
 
-```clojure
+```rust
     let mut c = 30;
 ```
 
 Any unused variables get a warning by default, to suppress that:
 
-```clojure
+```rust
     let mut _d = 40;
 ```
 
 variables and functions are in `snake_case`
 
-```clojure
+```rust
     let my_favorite_number = 7i;
 ```
 
 Whereas types are in CamelCase
 
-```clojure
+```rust
     type MyInt = int;
 ```
 
@@ -42,7 +42,7 @@ It is possible to declare and then initialize later, but this practice is used l
 ### Inference
 The inference system is pretty good. It doesn't just look at the value a variable was assigned, it also looks at how that variable is used afterwards to determine its type. An example of this using a vector:
 
-```clojure
+```rust
     fn main() {
         // Using local inference, the compiler knows that `elem` has type u8
         let elem = 5u8;
@@ -66,7 +66,7 @@ When hints are available it does a pretty good job of figuring the type itself, 
 ### Alias
 Aliasing is done with the keyword `type` and gives a new name to an existing type.
 
-```clojure
+```rust
     // `NanoSecond` is a new name for `u64`
     type NanoSecond = u64;
     type Inch = u64;
@@ -95,7 +95,7 @@ By default all types should be in CamelCase and uppercase, as mentioned, but pri
 ### Expressions
 Almost all statements are expressions, because this isn't always the desired behavior, you can suppress the output of an expression by ending the line with a semicolon. Blocks are also expressions whose l-value is set to the final expression evaluated inside it. If the final expression ends with a semicolon then the block receives the value `()`.
 
-```clojure
+```rust
     let item = "ice cream";
     let price: f64 =
     if item == "salad" {
@@ -113,7 +113,7 @@ The lack of a semicolon at the end of the line gives the entire block the value 
 
 ### Various Variable Types
 
-```clojure
+```rust
     let e: int = 1;     // int
     let f = 10i;        // int
     let g = 100u;       // unsigned int
@@ -136,51 +136,51 @@ The types above can be declared using the suffix notation shown, there are other
 
 Numbers can be underscored for readability, also known as the world's greatest feature that only two languages seem to use.
 
-```clojure
+```rust
     let bignum: i64 = 6_000_000_000_000
 ```
 
 true and false are literals of type bool
 
-```clojure
+```rust
     let tr = true;
     let fa = false;
 ```
 
 Strings are complicated, but here are some basics: Chars are four byte Unicode characters with single quotes
 
-```clojure
+```rust
     let m = 'a';
 ```
 
 Double-quoted strings will recognize some escape sequences:
 
-```clojure
+```rust
     let n = "Hello, world!\n";
 ```
 
 Raw string literals process none of these and use #hashes# at the beginning and end to define them
 
-```clojure
+```rust
     let o = r##"Hello, world!\n"##;
 ```
 
 The unit type, written as () has a single value of ()
 
-```clojure
+```rust
     let p = ();
 ```
 
 ### Blocks
 Are denoted by curly braces and are the standard unit of code execution. Unlike in other C-like languages the curly braces are never optional, but it seems idiomatically fine to have them on the same line, so there is no need for the Javalike extension of simple statements across 5-6 lines:
 
-```clojure
+```rust
     let s = if true { 3 } else { 4 };
 ```
 
 Variables are block scoped, Rust also allows variable shadowing, so variables with identical names can be declared in different scopes. In such an instance the variable that is the most local will be evaluated.
 
-```clojure
+```rust
     fn main() {
       let shadow = 5i;
       println!("Shadow: {}", shadow);
@@ -202,7 +202,7 @@ Variables are block scoped, Rust also allows variable shadowing, so variables wi
 ### Expressions
 This is probably wrong on some fronts, but basically everything is an expression, or can be one. The semicolon denotes the end of an expression. Understanding this helps to understand when to use semicolons and when not to use them. Within a block, if you don't terminate the expression with a semicolon then the value of the expression gets passed to the block.
 
-```clojure
+```rust
     fn is_four(x: int) -> bool {
       x == 4
     }
@@ -229,7 +229,7 @@ Precedence of operations is the same as most C-like languages. Math follows the 
 ### Compile time casting
 Using the `as` command to cast between different primitive values
 
-```clojure
+```rust
     println!("{:0.2f}", (f as f32));
     let q: f64 = 4.0;
     let r: uint = q as uint;
@@ -243,24 +243,24 @@ that end with !
 ### Conditionals
 Don't need to be surrounded by a parentheses, they are evaluated using the normal operator precedence which often doesn't require any parens.
 
-```clojure
+```rust
     let s = if true { 3 } else { 4 };
 ```
 
 The condition must be of type bool, no implicit conversion happens, so there is no inherent "truthiness" of certain values:
 
-```clojure
+```rust
     let t = if 4 { 4 } else { 3 }; <- Doesn't work
 ```
 
 If the blocks have a value (no semicolon at the end, thus passing the value to the block), then every arm of the conditional must return the same type.
 
-### Loop and Control Flow
+### Control Flow
 `loop` enters an infinite loop. `break` breaks out of the loop entirely, `continue` skips the remainder of the loop block and starts from the next iteration.
 
 Now for something completely better. Loops can be annotated and controlled separately when dealing with nested loops.
 
-```clojure
+```rust
     fn main() {
         'outer: loop {
             println!("Entered the outer loop");
@@ -280,7 +280,7 @@ Now for something completely better. Loops can be annotated and controlled separ
 ### Pattern Matching
 Is a generalized and more powerful version of the switch statement the first pattern that matches executes, there is no need to break. Pipes `|` can be used to match multiple conditions, so long as they match the same variables when using destructuring (See below). With numbers a range can be specified using `a..b`:
 
-```clojure
+```rust
     let t = 12i;
     match t {
       0       => println!("zero!"),
@@ -293,7 +293,7 @@ Is a generalized and more powerful version of the switch statement the first pat
 
 Each pattern is followed by a rocket `=>` and an expression to be executed if the pattern matches, followed by a comma. It's also legal, easier to remember, and possibly more idiomatic, to follow the pattern with a block, in which case the comma can be excluded.
 
-```clojure
+```rust
     let t = 12i;
     match t {
       0       => { println!("zero!") }
@@ -311,7 +311,7 @@ Match constructs must be exhaustive, meaning every possible pattern must be matc
 ### Destructuring
 Coming all the way from the land of functional programming accompanied by pattern matching is destructuring.
 
-```clojure
+```rust
     use std::f64;
     fn angle(vector: (f64, f64)) -> f64 {
         let pi = f64::consts::PI;
@@ -324,3 +324,63 @@ Coming all the way from the land of functional programming accompanied by patter
 ```
 
 Destructuring allows you to bind a match variable to some component of a data structure. In the case above the first pattern matches on a tuple whose first element is zero and binds the second value to `y` to test if `y` is less than `0`. The second pattern matches any other pattern with `0.0` in the `x` spot of the tuple. The `_` in this context means it assigns no variable to that match because it is not needed, which basically functions the same as a wildcard anyway, because the execution doesn't depend on the value of that particular component.
+
+Subpatterns can be matched using the `@` pattern.
+
+```rust
+    match age {
+      a @ 0..20 => { println!("{} years old", a) }
+      _ => { println!("Old enough to drink") }
+```
+Any arm of the match statement can have a "guard clause" that takes a boolean test and only executes if the pattern also passes the boolean test
+
+```rust
+    match point {
+      (1.0, y) if y > 2.0 => { // Expr }
+      ...
+    }
+```
+
+### Loops
+`loop` creates an infinite loop and is the idiomatic way of writing `while true`.
+
+```rust
+    loop {
+      stuff
+    }
+```
+
+`while` continues to execute while the conditional returns true.
+
+```rust
+    while items_queue > 0 {
+      handle
+    }
+```
+
+`for` can be used to iterate over a range of numbers:
+
+```rust
+    for n in range(0..10u) {
+      println!("{}", n);
+    }
+```
+
+`for` also works for anything that implements `Iterator`, and can be used for list comprehensions.
+
+```rust
+    let s = "Hello, world!";
+    for c in s.chars() {
+      println!("{}", c);
+    }
+```
+
+### Structs
+Struct types must be declared before use.
+
+```rust
+    struct Point {
+        x: f64,
+        y: f64
+    }
+```

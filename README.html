@@ -25,32 +25,32 @@
 
 <p>Are declared using let</p>
 
-<pre><code>let a = 10;
+<pre><code class="rust">    let a = 10;
 </code></pre>
 
 <p>Most types can be inferred, but if you need a specific type:</p>
 
-<pre><code>let b: i64 = 2000000000000;
+<pre><code class="rust">    let b: i64 = 2000000000000;
 </code></pre>
 
 <p>All variables are immutable by default, to allow mutation:</p>
 
-<pre><code>let mut c = 30;
+<pre><code class="rust">    let mut c = 30;
 </code></pre>
 
 <p>Any unused variables get a warning by default, to suppress that:</p>
 
-<pre><code>let mut _d = 40;
+<pre><code class="rust">    let mut _d = 40;
 </code></pre>
 
 <p>variables and functions are in <code>snake_case</code></p>
 
-<pre><code>let my_favorite_number = 7i;
+<pre><code class="rust">    let my_favorite_number = 7i;
 </code></pre>
 
 <p>Whereas types are in CamelCase</p>
 
-<pre><code>type MyInt = int;
+<pre><code class="rust">    type MyInt = int;
 </code></pre>
 
 <p>It is possible to declare and then initialize later, but this practice is used less in Rust than elsewhere because it can lead to uninitialized variables. The compiler will yell at you if you have a variable that never gets initialized, it will also yell at you if the value of a variable is never read and the variable is nor prefixed with a <code>_</code>. The compiler yells a lot.</p>
@@ -59,22 +59,22 @@
 
 <p>The inference system is pretty good. It doesn&#39;t just look at the value a variable was assigned, it also looks at how that variable is used afterwards to determine its type. An example of this using a vector:</p>
 
-<pre><code>fn main() {
-    // Using local inference, the compiler knows that `elem` has type u8
-    let elem = 5u8;
+<pre><code class="rust">    fn main() {
+        // Using local inference, the compiler knows that `elem` has type u8
+        let elem = 5u8;
 
-    // Create an empty vector (a growable array)
-    let mut vec = Vec::new();
-    // At this point the compiler doesn&#39;t know the exact type of `vec`, it
-    // just knows that it&#39;s a vector of something (`Vec&lt;_&gt;`)
+        // Create an empty vector (a growable array)
+        let mut vec = Vec::new();
+        // At this point the compiler doesn&#39;t know the exact type of `vec`, it
+        // just knows that it&#39;s a vector of something (`Vec&lt;_&gt;`)
 
-    // Insert `elem` in the vector
-    vec.push(elem);
-    // Aha! Now the compiler knows that `vec` is a vector of `u8`s (`Vec&lt;u8&gt;`)
-    // TODO ^ Try commenting out the `vec.push(elem)` line
+        // Insert `elem` in the vector
+        vec.push(elem);
+        // Aha! Now the compiler knows that `vec` is a vector of `u8`s (`Vec&lt;u8&gt;`)
+        // TODO ^ Try commenting out the `vec.push(elem)` line
 
-    println!(&quot;{}&quot;, vec);
-}
+        println!(&quot;{}&quot;, vec);
+    }
 </code></pre>
 
 <p>When hints are available it does a pretty good job of figuring the type itself, however if you remove these hints, or none exist, then it will yell at you asking for an explicit type because Rust does not tolerate uncertainty.</p>
@@ -83,27 +83,27 @@
 
 <p>Aliasing is done with the keyword <code>type</code> and gives a new name to an existing type.</p>
 
-<pre><code>// `NanoSecond` is a new name for `u64`
-type NanoSecond = u64;
-type Inch = u64;
+<pre><code class="rust">    // `NanoSecond` is a new name for `u64`
+    type NanoSecond = u64;
+    type Inch = u64;
 
-// Use an attribute to silence warning
-#[allow(non_camel_case_types)]
-type uint64_t = u64;
-// TODO ^ Try removing the attribute
+    // Use an attribute to silence warning
+    #[allow(non_camel_case_types)]
+    type uint64_t = u64;
+    // TODO ^ Try removing the attribute
 
-fn main() {
-    // `NanoSecond` = `Inch` = `uint64_t` = `u64`
-    let nanoseconds: NanoSecond = 5 as uint64_t;
-    let inches: Inch = 2 as uint64_t;
+    fn main() {
+        // `NanoSecond` = `Inch` = `uint64_t` = `u64`
+        let nanoseconds: NanoSecond = 5 as uint64_t;
+        let inches: Inch = 2 as uint64_t;
 
-    // Note that type aliases *don&#39;t* provide any extra type safety, because
-    // aliases are *not* new types
-    println!(&quot;{} nanoseconds + {} inches = {} unit?&quot;,
-             nanoseconds,
-             inches,
-             nanoseconds + inches);
-}
+        // Note that type aliases *don&#39;t* provide any extra type safety, because
+        // aliases are *not* new types
+        println!(&quot;{} nanoseconds + {} inches = {} unit?&quot;,
+                 nanoseconds,
+                 inches,
+                 nanoseconds + inches);
+    }
 </code></pre>
 
 <p>By default all types should be in CamelCase and uppercase, as mentioned, but primitive types are an exception to this rule. Primarily this feature is used to reduce typing or provide clarity in the code.</p>
@@ -112,32 +112,32 @@ fn main() {
 
 <p>Almost all statements are expressions, because this isn&#39;t always the desired behavior, you can suppress the output of an expression by ending the line with a semicolon. Blocks are also expressions whose l-value is set to the final expression evaluated inside it. If the final expression ends with a semicolon then the block receives the value <code>()</code>.</p>
 
-<pre><code>let item = &quot;ice cream&quot;;
-let price: f64 =
-if item == &quot;salad&quot; {
-  3.50
-} else if item == &quot;muffin&quot; {
-  2.50
-} else if item == &quot;ice cream&quot; {
-  101.20
-} else {
-  1.00
-};
+<pre><code class="rust">    let item = &quot;ice cream&quot;;
+    let price: f64 =
+    if item == &quot;salad&quot; {
+      3.50
+    } else if item == &quot;muffin&quot; {
+      2.50
+    } else if item == &quot;ice cream&quot; {
+      101.20
+    } else {
+      1.00
+    };
 </code></pre>
 
 <p>The lack of a semicolon at the end of the line gives the entire block the value of that expression, so the lack of semicolons at the end of these mean that, once evaluated, the block will return the value of the conditional that evaluated to true</p>
 
 <h3>Various Variable Types</h3>
 
-<pre><code>let e: int = 1;     // int
-let f = 10i;        // int
-let g = 100u;       // unsigned int
-let h = 15i8;       // 8 bit int
-let i = 1000i32;    // 32 bit int
-let j = 1000i64;    // 64 bit int
-let k = 1e6f32;     // 32 bit float
-let l = 2.1e-10f64; // 64 bit float
-let bn = 0b01101u   // Binary
+<pre><code class="rust">    let e: int = 1;     // int
+    let f = 10i;        // int
+    let g = 100u;       // unsigned int
+    let h = 15i8;       // 8 bit int
+    let i = 1000i32;    // 32 bit int
+    let j = 1000i64;    // 64 bit int
+    let k = 1e6f32;     // 32 bit float
+    let l = 2.1e-10f64; // 64 bit float
+    let bn = 0b01101u   // Binary
 </code></pre>
 
 <p>The types above can be declared using the suffix notation shown, there are other available variable types that are declared directly</p>
@@ -153,75 +153,75 @@ let bn = 0b01101u   // Binary
 
 <p>Numbers can be underscored for readability, also known as the world&#39;s greatest feature that only two languages seem to use.</p>
 
-<pre><code>let bignum: i64 = 6_000_000_000_000
+<pre><code class="rust">    let bignum: i64 = 6_000_000_000_000
 </code></pre>
 
 <p>true and false are literals of type bool</p>
 
-<pre><code>let tr = true;
-let fa = false;
+<pre><code class="rust">    let tr = true;
+    let fa = false;
 </code></pre>
 
 <p>Strings are complicated, but here are some basics: Chars are four byte Unicode characters with single quotes</p>
 
-<pre><code>let m = &#39;a&#39;;
+<pre><code class="rust">    let m = &#39;a&#39;;
 </code></pre>
 
 <p>Double-quoted strings will recognize some escape sequences:</p>
 
-<pre><code>let n = &quot;Hello, world!\n&quot;;
+<pre><code class="rust">    let n = &quot;Hello, world!\n&quot;;
 </code></pre>
 
 <p>Raw string literals process none of these and use #hashes# at the beginning and end to define them</p>
 
-<pre><code>let o = r##&quot;Hello, world!\n&quot;##;
+<pre><code class="rust">    let o = r##&quot;Hello, world!\n&quot;##;
 </code></pre>
 
 <p>The unit type, written as () has a single value of ()</p>
 
-<pre><code>let p = ();
+<pre><code class="rust">    let p = ();
 </code></pre>
 
 <h3>Blocks</h3>
 
 <p>Are denoted by curly braces and are the standard unit of code execution. Unlike in other C-like languages the curly braces are never optional, but it seems idiomatically fine to have them on the same line, so there is no need for the Javalike extension of simple statements across 5-6 lines:</p>
 
-<pre><code>let s = if true { 3 } else { 4 };
+<pre><code class="rust">    let s = if true { 3 } else { 4 };
 </code></pre>
 
 <p>Variables are block scoped, Rust also allows variable shadowing, so variables with identical names can be declared in different scopes. In such an instance the variable that is the most local will be evaluated.</p>
 
-<pre><code>fn main() {
-  let shadow = 5i;
-  println!(&quot;Shadow: {}&quot;, shadow);
-  // 5
-  {
-    let shadow = 10i;
-    println!(&quot;Shadow: {}&quot;, shadow);
-    // 10
-    {
+<pre><code class="rust">    fn main() {
+      let shadow = 5i;
       println!(&quot;Shadow: {}&quot;, shadow);
-      // 10
+      // 5
+      {
+        let shadow = 10i;
+        println!(&quot;Shadow: {}&quot;, shadow);
+        // 10
+        {
+          println!(&quot;Shadow: {}&quot;, shadow);
+          // 10
+        }
+      }
+      println!(&quot;Shadow: {}&quot;, shadow);
+      // 5
     }
-  }
-  println!(&quot;Shadow: {}&quot;, shadow);
-  // 5
-}
 </code></pre>
 
 <h3>Expressions</h3>
 
 <p>This is probably wrong on some fronts, but basically everything is an expression, or can be one. The semicolon denotes the end of an expression. Understanding this helps to understand when to use semicolons and when not to use them. Within a block, if you don&#39;t terminate the expression with a semicolon then the value of the expression gets passed to the block.</p>
 
-<pre><code>fn is_four(x: int) -&gt; bool {
-  x == 4
-}
+<pre><code class="rust">    fn is_four(x: int) -&gt; bool {
+      x == 4
+    }
 
-fn signum(x: int) -&gt; int {
-  if x &lt; 0 { -1 }
-  else if x &gt; 0 { 1 }
-  else { 0 }
-}
+    fn signum(x: int) -&gt; int {
+      if x &lt; 0 { -1 }
+      else if x &gt; 0 { 1 }
+      else { 0 }
+    }
 </code></pre>
 
 <p>As seen above, none of the expressions within the block use a semicolon at the end and thus the values, in this case a bool and some primitives, are inherited by the block and implicitly returned as the value of the function.</p>
@@ -241,9 +241,9 @@ fn signum(x: int) -&gt; int {
 
 <p>Using the <code>as</code> command to cast between different primitive values</p>
 
-<pre><code>println!(&quot;{:0.2f}&quot;, (f as f32));
-let q: f64 = 4.0;
-let r: uint = q as uint;
+<pre><code class="rust">    println!(&quot;{:0.2f}&quot;, (f as f32));
+    let q: f64 = 4.0;
+    let r: uint = q as uint;
 </code></pre>
 
 <h3>Syntax Extensions</h3>
@@ -256,23 +256,23 @@ that end with !</p>
 
 <p>Don&#39;t need to be surrounded by a parentheses, they are evaluated using the normal operator precedence which often doesn&#39;t require any parens.</p>
 
-<pre><code>let s = if true { 3 } else { 4 };
+<pre><code class="rust">    let s = if true { 3 } else { 4 };
 </code></pre>
 
 <p>The condition must be of type bool, no implicit conversion happens, so there is no inherent &quot;truthiness&quot; of certain values:</p>
 
-<pre><code>let t = if 4 { 4 } else { 3 }; &lt;- Doesn&#39;t work
+<pre><code class="rust">    let t = if 4 { 4 } else { 3 }; &lt;- Doesn&#39;t work
 </code></pre>
 
 <p>If the blocks have a value (no semicolon at the end, thus passing the value to the block), then every arm of the conditional must return the same type.</p>
 
-<h3>Loop and Control Flow</h3>
+<h3>Control Flow</h3>
 
 <p><code>loop</code> enters an infinite loop. <code>break</code> breaks out of the loop entirely, <code>continue</code> skips the remainder of the loop block and starts from the next iteration.</p>
 
 <p>Now for something completely better. Loops can be annotated and controlled separately when dealing with nested loops.</p>
 
-<pre><code class="clojure">    fn main() {
+<pre><code class="rust">    fn main() {
         &#39;outer: loop {
             println!(&quot;Entered the outer loop&quot;);
             &#39;inner: loop {
@@ -292,26 +292,26 @@ that end with !</p>
 
 <p>Is a generalized and more powerful version of the switch statement the first pattern that matches executes, there is no need to break. Pipes <code>|</code> can be used to match multiple conditions, so long as they match the same variables when using destructuring (See below). With numbers a range can be specified using <code>a..b</code>:</p>
 
-<pre><code>let t = 12i;
-match t {
-  0       =&gt; println!(&quot;zero!&quot;),
-          1 | 2   =&gt; println!(&quot;one or two&quot;),
-          3..10   =&gt; println!(&quot;three to ten&quot;),
-          10..20  =&gt; println!(&quot;ten to twenty&quot;),
-          _       =&gt; println!(&quot;something else entirely&quot;)
-}
+<pre><code class="rust">    let t = 12i;
+    match t {
+      0       =&gt; println!(&quot;zero!&quot;),
+              1 | 2   =&gt; println!(&quot;one or two&quot;),
+              3..10   =&gt; println!(&quot;three to ten&quot;),
+              10..20  =&gt; println!(&quot;ten to twenty&quot;),
+              _       =&gt; println!(&quot;something else entirely&quot;)
+    }
 </code></pre>
 
 <p>Each pattern is followed by a rocket <code>=&gt;</code> and an expression to be executed if the pattern matches, followed by a comma. It&#39;s also legal, easier to remember, and possibly more idiomatic, to follow the pattern with a block, in which case the comma can be excluded.</p>
 
-<pre><code>let t = 12i;
-match t {
-  0       =&gt; { println!(&quot;zero!&quot;) }
-          1 | 2   =&gt; { println!(&quot;one or two&quot;) }
-          3..10   =&gt; { println!(&quot;three to ten&quot;) }
-          10..20  =&gt; { println!(&quot;ten to twenty&quot;) }
-          _       =&gt; { println!(&quot;something else entirely&quot;) }
-}
+<pre><code class="rust">    let t = 12i;
+    match t {
+      0       =&gt; { println!(&quot;zero!&quot;) }
+              1 | 2   =&gt; { println!(&quot;one or two&quot;) }
+              3..10   =&gt; { println!(&quot;three to ten&quot;) }
+              10..20  =&gt; { println!(&quot;ten to twenty&quot;) }
+              _       =&gt; { println!(&quot;something else entirely&quot;) }
+    }
 </code></pre>
 
 <p>Of course, the statements within the block can&#39;t be terminated by semicolons or they won&#39;t pass their values to the block properly.</p>
@@ -322,17 +322,73 @@ match t {
 
 <p>Coming all the way from the land of functional programming accompanied by pattern matching is destructuring.</p>
 
-<pre><code>use std::f64;
-fn angle(vector: (f64, f64)) -&gt; f64 {
-    let pi = f64::consts::PI;
-    match vector {
-      (0.0, y) if y &lt; 0.0 =&gt; 1.5 * pi,
-      (0.0, _) =&gt; 0.5 * pi,
-      (x, y) =&gt; (y / x).atan()
+<pre><code class="rust">    use std::f64;
+    fn angle(vector: (f64, f64)) -&gt; f64 {
+        let pi = f64::consts::PI;
+        match vector {
+          (0.0, y) if y &lt; 0.0 =&gt; 1.5 * pi,
+          (0.0, _) =&gt; 0.5 * pi,
+          (x, y) =&gt; (y / x).atan()
+        }
     }
-}
 </code></pre>
 
 <p>Destructuring allows you to bind a match variable to some component of a data structure. In the case above the first pattern matches on a tuple whose first element is zero and binds the second value to <code>y</code> to test if <code>y</code> is less than <code>0</code>. The second pattern matches any other pattern with <code>0.0</code> in the <code>x</code> spot of the tuple. The <code>_</code> in this context means it assigns no variable to that match because it is not needed, which basically functions the same as a wildcard anyway, because the execution doesn&#39;t depend on the value of that particular component.</p>
+
+<p>Subpatterns can be matched using the <code>@</code> pattern.</p>
+
+<pre><code class="rust">    match age {
+      a @ 0..20 =&gt; { println!(&quot;{} years old&quot;, a) }
+      _ =&gt; { println!(&quot;Old enough to drink&quot;) }
+</code></pre>
+
+<p>Any arm of the match statement can have a &quot;guard clause&quot; that takes a boolean test and only executes if the pattern also passes the boolean test</p>
+
+<pre><code class="rust">    match point {
+      (1.0, y) if y &gt; 2.0 =&gt; { // Expr }
+      ...
+    }
+</code></pre>
+
+<h3>Loops</h3>
+
+<p><code>loop</code> creates an infinite loop and is the idiomatic way of writing <code>while true</code>.</p>
+
+<pre><code class="rust">    loop {
+      stuff
+    }
+</code></pre>
+
+<p><code>while</code> continues to execute while the conditional returns true.</p>
+
+<pre><code class="rust">    while items_queue &gt; 0 {
+      handle
+    }
+</code></pre>
+
+<p><code>for</code> can be used to iterate over a range of numbers:</p>
+
+<pre><code class="rust">    for n in range(0..10u) {
+      println!(&quot;{}&quot;, n);
+    }
+</code></pre>
+
+<p><code>for</code> also works for anything that implements <code>Iterator</code>, and can be used for list comprehensions.</p>
+
+<pre><code class="rust">    let s = &quot;Hello, world!&quot;;
+    for c in s.chars() {
+      println!(&quot;{}&quot;, c);
+    }
+</code></pre>
+
+<h3>Structs</h3>
+
+<p>Struct types must be declared before use.</p>
+
+<pre><code class="rust">    struct Point {
+        x: f64,
+        y: f64
+    }
+</code></pre>
 
 </div></body></html>

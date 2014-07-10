@@ -105,7 +105,7 @@ Operators are all pretty standard:
 - Comparison: `== != < > <= >=`
 - Boolean: `&& ||` and they short circuit
 
-Precedence of operations is the same as most C-like languages, also math and basic logic.
+Precedence of operations is the same as most C-like languages. Math follows the order of operations and has highest precedence, followed by binary and comparison operators, followed last by assignment operators. The behavior is what you would expect so remembering this is unnecessary.
 
 ### Compile time casting
 Using the `as` command to cast between different primitive values

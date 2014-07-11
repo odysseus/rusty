@@ -384,3 +384,294 @@ Struct types must be declared before use.
         y: f64
     }
 ```
+
+Construction uses the same basic syntax, but you simply exclude the `struct` command.
+
+```rust
+    let mut point = Point { x: 1.0, y: 1.0 };
+```
+Structs inherit their mutability, so if you declare a struct var to be mutable when declared then all of its fields will be mutable as well, and vice versa:
+
+```rust
+    let mut mutPoint = Point { x: 1.0, y: 2.0 };
+    let origin = Point { x: 0.0, y: 0.0 };
+
+    mutPoint.y += 1.0; // Totally works
+    origin.x += 10.0; // Totally doesn't
+```
+
+Structs can be destructured in `match` statements as well:
+
+```rust
+    match point {
+      Point { x: 0.0, y: yy } => { handle }
+      Point { x: xx, y: 1.0 } => { handle }
+      Point { x: 2.0, .. } => { handle }
+    }
+```
+
+Generally speaking the names of the struct are what's important and not the order they appear in, so you can typically call a field by name and not worry about the order of them. If there are fields you aren't interested in when matching a struct you can use `..` as a wildcard that simply accepts and ignores the values of all other attributes.
+
+Finally, in "Forget what we just told you" news: Matching and grabbing the variables of a struct is such a common pattern that you can simply shorthand it by including the variable name and it will bind to that variable name in the match.
+
+```rust
+    match point {
+      Point { x, .. } => { println!("{}", x) };
+    }
+```
+
+### Enums
+Are datatypes with a fixed number of representations:
+
+```rust
+    enum CardinalDirections {
+      North,
+      East,
+      South,
+      West
+    }
+```
+
+In a simple enum the values of these constants are masks for integer values. In this case `North` is `0`, `East` is `1` meaning `West` would be `2`.  You can also assign values to the enum items directly:
+
+```rust
+    enum Color {
+      Red = 0xff0000,
+      Green = 0x00ff00,
+      Blue = 0x0000ff
+    }
+```
+
+Or assign them more complex values:
+
+```rust
+    enum Shape {
+      Circle(Point, f64),
+      Rectangle(Point, Point)
+    }
+```
+
+To create a new `Circle` instance:
+
+```rust
+    let c = Circle(Point { x: 0.0, y: 0.0 }, 10.0);
+```
+
+Like most other items, `enum`s can be destructured:
+
+```rust
+    use std::f64;
+    fn area(sh: Shape) -> f64 {
+        match sh {
+            Circle(_, size) => f64::consts::PI * size * size,
+            Rectangle(Point { x, y }, Point { x: x2, y: y2 }) => (x2 - x) * (y2 - y)
+        }
+    }
+```
+
+To match based solely on the type you could use `Circle(..)` to ignore all the fields and match solely on being a circle, but for convenience simply calling the name of the type will do the same thing, so in this case using `Circle` as the match is equivalent.
+
+### Tuples
+Tuples are like strucuts, except that their fields are not named and cannot be accessed with dot notation.
+
+```rust
+    let mytup: (int, int, f64) = (1, 2, 3.14);
+    match myup {
+      (a, b, c) => println!("{}, a + b + (c as int))
+    }
+```
+
+They can be accessed via pattern-matching/destructuring:
+
+```rust
+    let t: (int, int) = (2,3);
+    let (_,v) = t;
+    println!("{}", v);
+    // 3
+```
+
+#### Tuple Structs
+Tuple structs behave like both structs and tuples, in that they have names and a specific type, like a struct, but their fields still do not have names. So `Chunky(1,2)` is different from `Bacon(1,2)`
+
+```rust
+    struct MyTup(int, int, f64);
+    let mytup: MyTup = MyTup(10, 20, 30.0);
+    match mytup {
+      MyTup(a, b, c) => println!("{}", a + b + (c as int))
+    }
+```
+
+As always the values can be extracted by pattern matching.
+
+#### Newtypes
+There's also a special tuplestructs called "newtypes" which define a tuple containing a single element, as so:
+
+```rust
+    struct UserId(int);
+```
+
+The reason for such a syntax is to create a type that is distinct from the primitive type it contains and not simply a synonym for it.
+
+```rust
+    struct Inches(int);
+    struct Centimeters(int);
+```
+
+This pattern is used when a type _could_ be represented by a single value, but gives it the benefits of type checking and behavioral encapsulation, which would not be achieved by simply aliasing another type. The values of these can be extracted by pattern matching.
+
+```rust
+    let length_with_unit = Inches(10);
+    let Inches(integer_length) = length_with_unit;
+    println!("length is {} inches", integer_length);
+```
+
+### Functions
+Functions, like other static declarations, can be declared at both the top level and inside of other functions. Functional programmers rejoice. The basic form of a function definition:
+
+```rust
+    fn adder(a: int, b: int) -> int {
+      return a + b;
+    }
+```
+
+A few things here. The name is declared using `fn name()`, the arguments go inside the parens after the name as `name: type` pairs separated by commas. The return value is stated using an arrow and the type returned. This style is similar to Haskell, which makes it a bit more visually apparently what is happening with the function.
+
+`return` is used to immediately return the given value from the function, but by excluding semicolons you can pass the value of an expression to the block of the function itself, and it will implicitly return the value of the final expression. So we could (and should) write the function above as:
+
+```rust
+    fn adder(a: int, b: int) -> int {
+      a + b
+    }
+```
+
+Note the lack of return statement and semicolon.  Explicit `return` should only be used when returning early from a function, when returning something other than the last expression evaluated, or if it's visually difficult to parse what the actual return value of the function is.
+
+Void functions are still possible, simply declare them without a return and suppress the implicit return of values using semicolons. Technically void functions still return the unit type `()`
+
+Function definitions support destructuring as well:
+
+```rust
+    fn main() {
+      fn add_heads((a,_): (int,int), (b,_): (int,int)) -> int {
+        a + b
+      }
+
+      let tupa: (int, int) = (3, 4);
+      let tupb: (int, int) = (5, 6);
+
+      println!("{}", add_heads(tupa, tupb));
+      // 8
+    }
+```
+
+### Destructors
+Destructors are methods that destroy. Completely, recursively, without remorse. Standard heap allocation is done using `box`, and the memory is freed as soon as the boxed item goes out of scope.
+
+```rust
+    {
+        // an integer allocated on the heap
+        let y = box 10i;
+    }
+    // the destructor frees the heap memory as soon as `y` goes out of scope
+```
+
+You can write your own destructors, but the manual goes strangely silent on that topic at this point. So...
+
+### Ownership
+An objects owner is responsible for managing the lifetime and mutability of an object. It calls the destructor when the object is no longer needed. Variables are top level owners and will destroy the associated values when they go out of scope.
+
+Ownership is recursive, so a mutable object containing other objects will make these objects mutable. Ownership of a object containing other objects entails ownership of the entire tree.  Fortunately, destructors are also recursive so calling a destructor on an object that contains other objects will also destroy the other objects.
+
+### Unused Items
+The compiler will complain about any variables that never get read, or any functions that never get used. To suppress these warnings for specific items you can use an underscore for variables or the `#[allow(dead_code)]` attribute for functions.
+
+```rust
+    fn main() {
+      let _x = 10i;
+
+      #[allow(dead_code)]
+      fn unused_fn() {}
+    }
+```
+
+### Modules
+Modules can contain functions, structs, traits, impl blocks, or other modules. Calling items from within a module (or nested modules) involves using their full path:
+
+    std::io::stdio::println("Hello, world!");
+
+The `println` function lives in the `stdio` module, in the `io` module, in the `std` create.
+
+An example of using modules:
+
+```rust
+    fn function() {
+        println!("called `function()`");
+    }
+
+    // A module named `my`
+    mod my {
+        // A module can contain items like functions
+        #[allow(dead_code)]
+        fn function() {
+            println!("called `my::function()`");
+        }
+
+        // Modules can be nested
+        mod nested {
+            #[allow(dead_code)]
+            fn function() {
+                println!("called `my::nested::function()`");
+            }
+        }
+    }
+```
+
+However, actually attempting to call most of these would generate an error, because functions and modules are private by default, to change that you need to add `pub` at the beginning of their definitions.
+
+```rust
+    fn function() {
+        println!("called `function()`");
+    }
+
+    mod my {
+        // A public function
+        pub fn function() {
+            println!("called `my::function()`");
+        }
+
+        // A private function
+        fn private_function() {
+            println!("called `my::private_function()`");
+        }
+
+        // Items can access other items in the same module
+        pub fn indirect_access() {
+            print!("called `my::indirect_access()`, that\n> ");
+
+            // regardless of their visibility
+            private_function();
+        }
+
+        // A public module
+        pub mod nested {
+            pub fn function() {
+                println!("called `my::nested::function()`");
+            }
+
+            #[allow(dead_code)]
+            fn private_function() {
+                println!("called `my::nested::private_function()`");
+            }
+        }
+
+        // A private module
+        mod inaccessible {
+            #[allow(dead_code)]
+            pub fn public_function() {
+                println!("called `my::inaccessible::public_function()`");
+            }
+        }
+    }
+```
+
+

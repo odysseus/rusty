@@ -594,7 +594,7 @@ The compiler will complain about any variables that never get read, or any funct
     }
 ```
 
-### Modules
+### Modules and Visibility
 Modules can contain functions, structs, traits, impl blocks, or other modules. Calling items from within a module (or nested modules) involves using their full path:
 
     std::io::stdio::println("Hello, world!");
@@ -674,4 +674,175 @@ However, actually attempting to call most of these would generate an error, beca
     }
 ```
 
+### Use
+`use` can be used to bind a long method address to a new name:
 
+```rust
+    fn main() {
+      use puts = std::io::stdio::println;
+      puts("Hello, world!");
+    }
+```
+
+### Self and Super
+`self` and `super` are used to remove ambiguity when calling functions. `self` refers to the current module scope and `super` refers to the parent scope. Here's a lengthy example of all that fun stuff.
+
+```rust
+    fn function() {
+        println!("called `function()`");
+    }
+
+    mod my {
+        pub fn indirect_call() {
+            // Let's access all the functions named `function` from this scope
+            print!("called `my::indirect_call()`, that\n> ");
+
+            // `my::function` can be called directly
+            function();
+
+            {
+                // This will bind to the `cool::function` in the *crate* scope
+                // In this case the crate scope is the outermost scope
+                use root_cool_function = cool::function;
+
+                print!("> ");
+                root_cool_function();
+            }
+
+            {
+                // `self` refers to the current module scope, in this case: `my`
+                use my_cool_function = self::cool::function;
+
+                print!("> ")
+                my_cool_function();
+            }
+
+            {
+                // `super` refers to the parent scope, i.e. outside of the `my`
+                // module
+                use root_function = super::function;
+
+                print!("> ");
+                root_function();
+            }
+        }
+
+        fn function() {
+            println!("called `my::function()`");
+        }
+
+        mod cool {
+            pub fn function() {
+                println!("called `my::cool::function()`");
+            }
+        }
+    }
+
+    mod cool {
+        pub fn function() {
+            println!("called `cool::function()`");
+        }
+    }
+
+    fn main() {
+        my::indirect_call();
+    }
+```
+
+### Using Modules in Other Files
+By convention, Rust will look for a module file whose name is identical to the name of the module. Because of this you can simply include the name of the module at the top of a code file and it will look for the file containing it. An example of a project structure:
+
+```rust
+$ tree .
+.
+|-- my
+|   |-- inaccessible.rs
+|   |-- mod.rs
+|   `-- nested.rs
+`-- split.rs
+```
+
+Now the `split.rs` file in that project:
+
+```rust
+    // split.rs
+    // This declaration will look for a file named `my.rs` or `my/mod.rs` and will
+    // insert its contents inside a module named `my` under this scope
+    mod my;
+
+    fn function() {
+        println!("called `function()`");
+    }
+
+    fn main() {
+        my::function();
+
+        function();
+
+        my::indirect_access();
+
+        my::nested::function();
+    }
+```
+
+The `my/mod.rs` file:
+
+```rust
+    // my/mod.rs
+    // Similarly `mod inaccessible` and `mod nested` will locate the `nested.rs`
+    // and `inaccessible.rs` files and insert them here under their respective
+    // modules
+    mod inaccessible;
+    pub mod nested;
+
+    pub fn function() {
+        println!("called `my::function()`");
+    }
+
+    fn private_function() {
+        println!("called `my::private_function()`");
+    }
+
+    pub fn indirect_access() {
+        print!("called `my::indirect_access()`, that\n> ");
+
+        private_function();
+    }
+```
+
+`my/nested.rs`
+
+```rust
+    // my/nested.rs
+    pub fn function() {
+        println!("called `my::nested::function()`");
+    }
+
+    #[allow(dead_code)]
+    fn private_function() {
+        println!("called `my::nested::private_function()`");
+    }
+```
+
+`my/inaccessible.rs`
+
+```rust
+    // my/inaccessible.rs
+    #[allow(dead_code)]
+    pub fn public_function() {
+        println!("called `my::inaccessible::public_function()`");
+    }
+```
+
+And finally the output of running `split.rs`
+
+```rust
+    $ rustc split.rs && ./split
+    called `my::function()`
+    called `function()`
+    called `my::indirect_access()`, that
+    > called `my::private_function()`
+    called `my::nested::function()`
+```
+
+### Crates
